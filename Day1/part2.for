@@ -1,0 +1,26 @@
+      PROGRAM REPORT
+      IMPLICIT NONE
+
+      INTEGER EXPENS
+      DIMENSION EXPENS(400)
+      INTEGER I, J, K
+
+      OPEN(1, FILE='input.dat', STATUS='OLD', ACTION='READ')
+      DO 10 I = 1, 200
+         READ(1, *) EXPENS(I)
+   10 CONTINUE
+C CUBED TIME LOOP
+      DO 40 I = 1, 200
+         DO 30 J = 1, 200
+            DO 20 K = 1, 200
+               IF ((EXPENS(I) + EXPENS(J) + EXPENS(K)).EQ.2020) GOTO 50
+   20       CONTINUE
+   30    CONTINUE
+   40 CONTINUE
+C FOUND THE THREE THAT GIVE 2020
+   50 CONTINUE
+      WRITE (*, 1000) EXPENS(I), EXPENS(J), EXPENS(K),
+     1 EXPENS(I) * EXPENS(J) * EXPENS(K)
+      STOP
+ 1000 FORMAT (I, ' * ', I, ' * ', I, ' = ', I)
+      END
