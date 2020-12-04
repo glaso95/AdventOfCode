@@ -1,0 +1,63 @@
+      PROGRAM TOBOGGAN
+      INTEGER DX, DY
+      DIMENSION DX(5), DY(5)
+      INTEGER LINES, TREES, X, Y, SY
+      DOUBLE PRECISION PROD
+      LOGICAL BITMAP
+      DIMENSION BITMAP(31, 400)
+      DATA DX/1, 3, 5, 7, 1/
+      DATA DY/1, 1, 1, 1, 2/
+      DATA TREES/0, 0, 0, 0, 0/
+C
+C LOAD FROM FILE FIRST
+      CALL SETUP(BITMAP, LINES)
+      PROD = 1
+C PERFORM THE SLIDE SIMULATIONS
+      DO 30 I = 1, 5
+         SX = 1
+         TREES = 0
+         DO 20 Y = 1, LINES, DY(I)
+            DO 10 X = 1, 31
+               IF (BITMAP(X, Y).EQ..TRUE..AND.X.EQ.SX)
+     1            TREES = TREES + 1
+   10       CONTINUE
+            SX = SX + DX(I)
+            IF (SX.GT.31) SX = SX - 31
+   20    CONTINUE
+         PROD = PROD * TREES
+         WRITE(*, 1000) DX(I), DY(I), TREES
+   30 CONTINUE
+      WRITE(*, 2000) PROD
+      STOP
+ 1000 FORMAT('TOTAL TREES ENCOUNTERED ON SLOPE: ',
+     1 '(' I1, ',' I1, ')  = ', I4)
+ 2000 FORMAT('PRODUCT OF TREES ON ALL SLOPES: ', F20.0)
+      END
+C
+C READ THE INPUT FILE AND PARSE IT INTO
+C A BITMAP
+      SUBROUTINE SETUP(SLOPE, LINES)
+      CHARACTER*31 LINE
+      INTEGER COL, ROW
+      LOGICAL SLOPE
+      DIMENSION SLOPE(31, 400)
+C
+C OPEN FILE AND READ LINE BY LINE
+      COL = 1
+      OPEN(UNIT=1, FILE='input.dat', ACTION='READ', STATUS='OLD')
+   10    READ(UNIT=1, FMT=1000, END=30) LINE
+         DO 20 COL = 1, 31
+            IF (LINE(COL:COL).EQ.'.') SLOPE(COL, ROW) = .FALSE.
+            IF (LINE(COL:COL).EQ.'#') SLOPE(COL, ROW) = .TRUE.
+            IF (LINE(COL:COL).NE.'#'.AND.LINE(COL:COL).NE.'.')
+     1          WRITE(*,2000) ROW, COL
+   20    CONTINUE
+         ROW = ROW + 1
+         GOTO 10
+   30 CONTINUE
+      CLOSE(UNIT=1)
+      LINES = ROW
+      RETURN
+ 1000 FORMAT(A)
+ 2000 FORMAT('INVALID CHARACTER AT LINE/COLUMN: ', I, I)
+      END
